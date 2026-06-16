@@ -1,0 +1,189 @@
+/* --- CSS VARIABLES (Our Cute Color Settings) --- */
+:root {
+    --bg-grey: #f4f4f6;          /* Soft, clean light grey background */
+    --surface-white: #ffffff;    /* Pure white for container backgrounds */
+    --cute-pink: #fbcfe8;        /* Soft pastel pink for navigation links and headers */
+    --accent-rose: #db2777;      /* Vivid rose pink for interactive buttons */
+    --text-dark: #374151;        /* Deep charcoal grey for highly legible text */
+    --border-light: #e5e7eb;     /* Border dividers */
+    --danger-red: #f87171;       /* Light red for delete actions */
+    --transition-smooth: all 0.25s ease-in-out;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-grey);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.hidden { display: none !important; }
+
+/* Accessible Skip Links */
+.skip-link {
+    position: absolute; top: -100px; left: 0;
+    background: var(--accent-rose); color: white; padding: 10px; z-index: 999;
+}
+.skip-link:focus { top: 0; }
+
+/* --- 📱 MOBILE-FIRST BASE LAYOUT (Width >= 360px) --- */
+@media (min-width: 360px) {
+    .app-header { 
+        background: linear-gradient(135deg, #fce7f3, var(--cute-pink)); 
+        padding: 1.5rem; 
+        text-align: center;
+        border-bottom: 3px solid #f9a8d4;
+    }
+    
+    .app-header h1 {
+        margin: 0 0 1rem 0;
+        color: #9d174d;
+        font-size: 1.8rem;
+    }
+
+    .app-navigation { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 0.5rem; 
+    }
+
+    .nav-link {
+        background: var(--surface-white); 
+        border: 2px solid #fbcfe8; 
+        color: #9d174d;
+        padding: 0.75rem; 
+        border-radius: 0.5rem; 
+        cursor: pointer; 
+        font-weight: 600;
+        transition: var(--transition-smooth);
+    }
+
+    .nav-link[aria-selected="true"], .nav-link:hover { 
+        background: var(--accent-rose); 
+        color: var(--surface-white);
+        border-color: var(--accent-rose);
+        transform: translateY(-1px);
+    }
+
+    .app-main { padding: 1rem; }
+
+    .app-section {
+        background: var(--surface-white);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .metrics-grid { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 1rem; 
+        margin-bottom: 1.5rem; 
+    }
+
+    .metric-card { 
+        background: #fdf2f8; 
+        padding: 1.25rem; 
+        border-radius: 0.5rem; 
+        text-align: center;
+        border-left: 4px solid var(--accent-rose);
+    }
+
+    .metric-card h3 { margin: 0; font-size: 0.9rem; color: #9d174d; text-transform: uppercase; }
+    .metric-card p { margin: 0.5rem 0 0 0; font-size: 1.75rem; font-weight: bold; color: var(--text-dark); }
+
+    .chart-bars-layout { 
+        display: flex; 
+        align-items: flex-end; 
+        gap: 0.5rem; 
+        height: 150px; 
+        background: var(--bg-grey); 
+        padding: 1rem; 
+        border-radius: 0.5rem; 
+    }
+    
+    .chart-column { 
+        flex: 1; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        height: 100%; 
+        justify-content: flex-end; 
+    }
+    
+    .chart-bar { 
+        background: var(--accent-rose); 
+        width: 100%; 
+        border-radius: 0.25rem 0.25rem 0 0; 
+        transition: var(--transition-smooth); 
+    }
+    
+    .chart-label { font-size: 0.7rem; margin-top: 0.25rem; color: var(--text-dark); }
+
+    .table-scroll-wrapper { overflow-x: auto; margin-top: 1rem; }
+    
+    .data-table { 
+        width: 100%; 
+        border-collapse: collapse; 
+    }
+    
+    .data-table th {
+        background-color: #fdf2f8;
+        color: #9d174d;
+        font-weight: 600;
+        border-bottom: 2px solid #fbcfe8;
+    }
+
+    .data-table th, .data-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-light); }
+
+    .input-field { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1.25rem; }
+    .input-field label { font-weight: 600; color: var(--text-dark); font-size: 0.9rem; }
+    .input-field input, .input-field select { 
+        padding: 0.6rem; 
+        border: 1px solid #d1d5db; 
+        border-radius: 0.375rem; 
+        transition: var(--transition-smooth);
+    }
+    .input-field input:focus { outline: none; border-color: var(--accent-rose); box-shadow: 0 0 0 3px #fbcfe8; }
+
+    .form-error { color: #dc2626; font-size: 0.8rem; font-weight: 500; min-height: 1.2rem; display: block; }
+    
+    .tag-pill { background: #fce7f3; color: #be185d; padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
+    
+    .btn-main { 
+        background: var(--accent-rose); 
+        color: white; 
+        border: none; 
+        padding: 0.75rem 1.5rem; 
+        border-radius: 0.5rem; 
+        cursor: pointer; 
+        font-weight: 600; 
+        width: 100%; 
+        transition: var(--transition-smooth);
+    }
+    .btn-main:hover { background: #be185d; }
+
+    .btn-action { padding: 0.35rem 0.75rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; cursor: pointer; transition: var(--transition-smooth); }
+    .btn-action:hover { border-color: var(--accent-rose); color: var(--accent-rose); }
+    .btn-danger { background: var(--danger-red); color: white; border: none; }
+    .btn-danger:hover { background: #ef4444; color: white; }
+
+    .alert-assertive { background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border-left: 4px solid #dc2626; }
+    .alert-polite { background: #dcfce7; color: #166534; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border-left: 4px solid #16a34a; }
+}
+
+/* --- 662 Layout Balanced Tablet Adjustments (Width >= 768px) --- */
+@media (min-width: 768px) {
+    .app-navigation { flex-direction: row; justify-content: center; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .filter-bar { display: flex; gap: 1rem; }
+    .filter-bar .input-field { flex: 1; }
+    .btn-main { width: auto; }
+}
+
+/* --- 💻 High Resolution Large Format Desktop Layer (Width >= 1024px) --- */
+@media (min-width: 1024px) {
+    .app-main { max-width: 1140px; margin: 0 auto; padding: 2rem; }
+}
