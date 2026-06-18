@@ -1,18 +1,14 @@
-// LYNN Book & Notes Vault - RegEx Search Engine
+export function executeRegexQueryFilter(books, criteriaPattern) {
+    if (!criteriaPattern.trim()) return books;
 
-// Safely compiles a text string into a Regular Expression object
-export function compileRegex(input, flags = 'i') {
-    if (!input) return null;
     try {
-        return new RegExp(input, flags); //
-    } catch (error) {
-        return null; // Prevents crashing on invalid regex syntax
+        const dynamicCompiledRegex = new RegExp(criteriaPattern, 'i'); // Case-insensitive matching
+        return books.filter(book => 
+            dynamicCompiledRegex.test(book.title || '') || 
+            dynamicCompiledRegex.test(book.author || '')
+        );
+    } catch (invalidRegexFaultException) {
+        // Safe evaluation shield while typing raw unmatched patterns
+        return books; 
     }
-}
-
-// Wraps matching text patterns inside semantic HTML highlight tags
-export function highlight(text, regex) {
-    if (!regex || !text) return text;
-    const stringText = String(text);
-    return stringText.replace(regex, match => `<mark>${match}</mark>`); //
 }

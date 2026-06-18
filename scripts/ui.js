@@ -1,184 +1,137 @@
-export function switchView(targetViewId) {
-    document.querySelectorAll('.app-section').forEach(section => section.classList.add('hidden'));
-    const targetSection = document.getElementById(targetViewId);
-    if (targetSection) targetSection.classList.remove('hidden');
+export function transitionActiveView(viewSectionId) {
+    document.querySelectorAll('.app-section').forEach(sec => sec.classList.add('hidden'));
+    document.getElementById(viewSectionId)?.classList.remove('hidden');
 
-    const successBox = document.getElementById('form-success');
-    if (successBox) {
-        successBox.style.display = 'none';
-        successBox.textContent = '';
-    }
-
-    document.querySelectorAll('.nav-link').forEach(btn => {
-        const isSelected = btn.getAttribute('data-target') === targetViewId;
-        btn.setAttribute('aria-selected', isSelected ? "true" : "false");
+    document.querySelectorAll('.nav-link').forEach(link => {
+        const matchesTarget = link.getAttribute('data-target') === viewSectionId;
+        link.setAttribute('aria-selected', matchesTarget ? "true" : "false");
     });
 }
 
-// 📊 Render Dashboard Metrics with 7-Day Trending & ARIA Targets
-export function renderDashboardMetrics(books) {
-    const safeBooks = Array.isArray(books) ? books : [];
-    const totalBooks = safeBooks.length;
-    const totalPages = safeBooks.reduce((sum, b) => sum + parseInt(b.pages || 0, 10), 0);
+export function populateDashboardMetrics(booksCollection) {
+    const totalBooks = booksCollection.length;
+    const computedTotalPages = booksCollection.reduce((sum, current) => sum + parseInt(current.pages || 0, 10), 0);
 
-    // Track common tag configurations
-    const tagCounts = {};
-    safeBooks.forEach(b => {
-        const arr = Array.isArray(b.tags) ? b.tags : (typeof b.tags === 'string' ? b.tags.split(',').map(t => t.trim()) : []);
-        arr.forEach(t => { if (t) tagCounts[t] = (tagCounts[t] || 0) + 1; });
+    // Compute top frequent tags
+    const distributionMap = {};
+    booksCollection.forEach(entry => {
+        const parsingSource = Array.isArray(entry.tags) ? entry.tags : (entry.tags ? entry.tags.split(',') : []);
+        parsingSource.map(tag => tag.trim()).filter(Boolean).forEach(t => distributionMap[t] = (distributionMap[t] || 0) + 1);
     });
-    const topTag = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'None';
+    const highestRankedTag = Object.entries(distributionMap).sort((x, y) => y[1] - x[1])[0]?.[0] || 'None';
 
-    if (document.getElementById('stat-total-books')) document.getElementById('stat-total-books').textContent = totalBooks;
-    if (document.getElementById('stat-total-pages')) document.getElementById('stat-total-pages').textContent = totalPages.toLocaleString();
-    if (document.getElementById('stat-top-tag')) document.getElementById('stat-top-tag').textContent = topTag;
+    document.getElementById('stat-total-books').textContent = totalBooks;
+    document.getElementById('stat-total-pages').textContent = computedTotalPages.toLocaleString();
+    document.getElementById('stat-top-tag').textContent = highestRankedTag;
 
-    // 🎯 Rule validation: Capacity Limit Checking Logic
-    const targetCapInput = document.getElementById('settings-page-cap');
-    const allowedLimit = parseInt(targetCapInput ? targetCapInput.value : 2000, 10) || 2000;
-    const capStatusText = document.getElementById('target-cap-status');
-    const ariaBox = document.getElementById('aria-announcer');
+    // Evaluate Milestone Limit Overage Target Restrictions
+    const ceilingThresholdInput = document.getElementById('settings-page-cap');
+    const metricLimitCap = parseInt(ceilingThresholdInput ? ceilingThresholdInput.value : 2000, 10) || 2000;
+    const alertStatusBar = document.getElementById('target-cap-status');
+    const liveAriaRegion = document.getElementById('aria-announcer');
 
-    if (capStatusText) {
-        if (totalPages <= allowedLimit) {
-            const left = allowedLimit - totalPages;
-            capStatusText.innerHTML = `🟢 Safe: Within target limit. You have <span style="color:#db2777;">${left.toLocaleString()}</span> pages remaining before reaching your milestone cap.`;
-            if (ariaBox) ariaBox.textContent = `Safe milestone capacity. ${left} pages remaining.`;
+    if (alertStatusBar) {
+        if (computedTotalPages <= metricLimitCap) {
+            const spacesLeft = metricLimitCap - computedTotalPages;
+            alertStatusBar.innerHTML = `🟢 Safe: Within target limit. You have <span style="color:#db2777;">${spacesLeft.toLocaleString()}</span> pages remaining before reaching your milestone cap.`;
+            if (liveAriaRegion) liveAriaRegion.textContent = `Safe milestone metrics state. ${spacesLeft} pages remaining.`;
         } else {
-            const over = totalPages - allowedLimit;
-            capStatusText.innerHTML = `⚠️ Overage: milestone ceiling exceeded! You are <span style="color:#ef4444; font-weight:800;">${over.toLocaleString()}</span> pages over your specified configuration limit.`;
-            if (ariaBox) ariaBox.textContent = `Alert: milestone ceiling exceeded by ${over} pages!`;
+            const pagesOverage = computedTotalPages - metricLimitCap;
+            alertStatusBar.innerHTML = `⚠️ Overage: milestone ceiling exceeded! You are <span style="color:#ef4444; font-weight:800;">${pagesOverage.toLocaleString()}</span> pages over your limit.`;
+            if (liveAriaRegion) liveAriaRegion.textContent = `Alert: milestone ceiling exceeded by ${pagesOverage} pages!`;
         }
     }
 
-    // 📈 Build out Last-7-days trend calculation graph chart layout
-    const chartContainer = document.getElementById('chart-container');
-    if (!chartContainer) return;
-    chartContainer.innerHTML = '';
+    // Build Last-7-days reading trends graph chart array outputs
+    const windowPlotterBox = document.getElementById('chart-container');
+    if (!windowPlotterBox) return;
+    windowPlotterBox.innerHTML = '';
 
-    const daysTracked = [];
-    for (let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        daysTracked.push(d.toISOString().split('T')[0]);
+    const historicalDaysList = [];
+    for (let currentOffset = 6; currentOffset >= 0; currentOffset--) {
+        const contextDate = new Date();
+        contextDate.setDate(contextDate.getDate() - currentOffset);
+        historicalDaysList.push(contextDate.toISOString().split('T')[0]);
     }
 
-    const pagesPerDay = daysTracked.map(dateStr => {
-        return safeBooks
-            .filter(b => b.dateAdded && b.dateAdded.startsWith(dateStr))
-            .reduce((sum, b) => sum + parseInt(b.pages || 0, 10), 0);
+    const calculatedPagesDailyArray = historicalDaysList.map(dateKey => {
+        return booksCollection
+            .filter(item => item.dateAdded === dateKey)
+            .reduce((aggregate, item) => aggregate + parseInt(item.pages || 0, 10), 0);
     });
 
-    const highestDayValue = Math.max(...pagesPerDay, 1);
+    const maximalDailySum = Math.max(...calculatedPagesDailyArray, 1);
 
-    daysTracked.forEach((dayLabel, index) => {
-        const currentDaySum = pagesPerDay[index];
-        const computedHeight = (currentDaySum / highestDayValue) * 100;
-        const displayMonthDay = dayLabel.substring(5); // Format tracking window as MM-DD
+    historicalDaysList.forEach((dayLabel, indexIdx) => {
+        const trackingSumValue = calculatedPagesDailyArray[indexIdx];
+        const displayPercentHeight = (trackingSumValue / maximalDailySum) * 100;
+        const abbreviatedMonthDay = dayLabel.substring(5);
 
-        const col = document.createElement('div');
-        col.style.cssText = "display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; width: 45px;";
-        col.innerHTML = `
-            <div style="background: #db2777; width: 24px; height: ${Math.max(computedHeight, 4)}%; border-radius: 4px 4px 0 0; box-shadow: 0 2px 4px rgba(219,39,119,0.15);" title="${currentDaySum} pages added on ${dayLabel}"></div>
-            <div style="font-size: 0.7rem; font-weight: 600; color: #4c0519; text-align: center; margin-top: 6px;">${displayMonthDay}</div>
+        const pillarElement = document.createElement('div');
+        pillarElement.style.cssText = "display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end; width:40px;";
+        pillarElement.innerHTML = `
+            <div style="background:#db2777; width:20px; height:${Math.max(displayPercentHeight, 5)}%; border-radius:4px 4px 0 0;" title="${trackingSumValue} pages added on ${dayLabel}"></div>
+            <div style="font-size:0.7rem; font-weight:600; color:#4c0519; margin-top:5px;">${abbreviatedMonthDay}</div>
         `;
-        chartContainer.appendChild(col);
+        windowPlotterBox.appendChild(pillarElement);
     });
 }
 
-// 📚 Render Catalog Table View Layout with Actions and Regex Highlight Supports
-export function renderCatalogTable(books, searchQuery = '', sortCriteria = 'dateAdded-desc', onEdit, onDelete) {
-    const tableBody = document.getElementById('catalog-table-body');
-    if (!tableBody) return;
-    tableBody.innerHTML = '';
+export function populateCatalogRecordsTable(filteredBooks, activePattern, sortKey, triggerEditCall, triggerDeleteCall) {
+    const targetBody = document.getElementById('catalog-table-body');
+    if (!targetBody) return;
+    targetBody.innerHTML = '';
 
-    let records = [...books];
+    const viewBuffer = [...filteredBooks];
 
-    // 🔍 Match Regular Expression Queries Safely
-    if (searchQuery.trim() !== '') {
-        try {
-            const regex = new RegExp(searchQuery, 'i');
-            records = records.filter(b => regex.test(b.title || '') || regex.test(b.author || ''));
-        } catch (e) {
-            // Graceful processing catch for invalid regex strings while typing
-        }
-    }
+    // Evaluate sorting options
+    const [attribute, sortingDirectionOrder] = sortKey.split('-');
+    viewBuffer.sort((valX, valY) => {
+        let alpha = attribute === 'pages' ? parseInt(valX[attribute] || 0, 10) : (valX[attribute] || '').toString().toLowerCase();
+        let beta = attribute === 'pages' ? parseInt(valY[attribute] || 0, 10) : (valY[attribute] || '').toString().toLowerCase();
 
-    // ↕️ Apply Sorting Selection Matrix Parameters
-    const [field, direction] = sortCriteria.split('-');
-    records.sort((a, b) => {
-        let valA = field === 'pages' ? parseInt(a[field] || 0, 10) : (a[field] || '').toString().toLowerCase();
-        let valB = field === 'pages' ? parseInt(b[field] || 0, 10) : (b[field] || '').toString().toLowerCase();
-
-        if (valA < valB) return direction === 'asc' ? -1 : 1;
-        if (valA > valB) return direction === 'asc' ? 1 : -1;
+        if (alpha < beta) return sortingDirectionOrder === 'asc' ? -1 : 1;
+        if (alpha > beta) return sortingDirectionOrder === 'asc' ? 1 : -1;
         return 0;
     });
 
-    if (records.length === 0) {
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="7" style="padding: 40px; text-align: center; color: #6b7280;">
-                    📭 No books matched your library filters or search criteria.
-                </td>
-            </tr>
-        `;
+    if (viewBuffer.length === 0) {
+        targetBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#6b7280;">📭 No books match your active catalog filters or queries.</td></tr>`;
         return;
     }
 
-    records.forEach(book => {
-        const row = document.createElement('tr');
-        row.style.borderBottom = "1px solid #f3f4f6";
+    viewBuffer.forEach(bookItem => {
+        const gridRow = document.createElement('tr');
+        const labelsString = Array.isArray(bookItem.tags) ? bookItem.tags.join(', ') : (bookItem.tags || 'None');
+        
+        let matchingTitleContent = bookItem.title || 'Untitled';
+        let matchingAuthorContent = bookItem.author || 'Unknown';
 
-        const tags = Array.isArray(book.tags) ? book.tags.join(', ') : (book.tags || 'None');
-        const fallbackCover = 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=100&auto=format&fit=crop&q=60';
-        const coverUrl = book.cover || fallbackCover;
-
-        // Apply HTML highlighting tags if a query is active
-        let highlightedTitle = book.title || 'Untitled';
-        let highlightedAuthor = book.author || 'Unknown';
-
-        if (searchQuery.trim() !== '') {
+        // Apply HTML highlighting tags if a search query is active
+        if (activePattern.trim()) {
             try {
-                const regex = new RegExp(`(${searchQuery})`, 'gi');
-                highlightedTitle = highlightedTitle.replace(regex, '<mark style="background:#fbcfe8; color:#9d174d; border-radius:2px; padding:0 2px;">$1</mark>');
-                highlightedAuthor = highlightedAuthor.replace(regex, '<mark style="background:#fbcfe8; color:#9d174d; border-radius:2px; padding:0 2px;">$1</mark>');
-            } catch (e) {}
+                const isolationCompiler = new RegExp(`(${activePattern})`, 'gi');
+                matchingTitleContent = matchingTitleContent.replace(isolationCompiler, '<mark style="background:#fbcfe8; color:#9d174d; padding:0 2px; border-radius:2px;">$1</mark>');
+                matchingAuthorContent = matchingAuthorContent.replace(isolationCompiler, '<mark style="background:#fbcfe8; color:#9d174d; padding:0 2px; border-radius:2px;">$1</mark>');
+            } catch (ex) {}
         }
 
-        row.innerHTML = `
-            <td style="padding: 12px 16px; font-family: monospace; font-size: 0.8rem; color: #6b7280;">${book.id}</td>
-            <td style="padding: 8px 16px;">
-                <img src="${coverUrl}" alt="${book.title} cover" onerror="this.onerror=null; this.src='${fallbackCover}';" style="width: 42px; height: 60px; object-fit: contain; border-radius: 4px; border: 1px solid #e5e7eb;">
-            </td>
-            <td style="padding: 12px 16px; font-weight: 500; color: #111827;">${highlightedTitle}</td>
-            <td style="padding: 12px 16px; color: #4b5563;">${highlightedAuthor}</td>
-            <td style="padding: 12px 16px; color: #4b5563; font-weight: 600;">${book.pages}</td>
-            <td style="padding: 12px 16px;"><span style="background: #fff5f7; border: 1px solid #fbcfe8; color: #9d174d; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">${tags}</span></td>
-            <td style="padding: 12px 16px;">
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-edit-action" style="background:#f3f4f6; color:#4b5563; border:1px solid #e5e7eb; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer; font-weight:600;">✍️ Edit</button>
-                    <button class="btn-delete-action" style="background:#fff5f7; color:#ef4444; border:1px solid #fecdd3; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer; font-weight:600;">🗑️ Delete</button>
-                </div>
+        gridRow.innerHTML = `
+            <td style="font-family:monospace; font-size:0.8rem;">${bookItem.id}</td>
+            <td><img src="${bookItem.cover || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=80'}" alt="Cover" style="width:35px; height:50px; object-fit:cover; border-radius:3px;"></td>
+            <td><strong>${matchingTitleContent}</strong></td>
+            <td>${matchingAuthorContent}</td>
+            <td><strong>${bookItem.pages}</strong></td>
+            <td><span style="background:#fff5f7; border:1px solid #fbcfe8; color:#9d174d; padding:2px 6px; border-radius:10px; font-size:0.75rem;">${labelsString}</span></td>
+            <td>
+                <button class="btn-row-edit" style="padding:4px 8px; cursor:pointer; background:#f3f4f6; border:1px solid #ccc; border-radius:4px;">✍️ Edit</button>
+                <button class="btn-row-delete" style="padding:4px 8px; cursor:pointer; background:#fff5f7; border:1px solid #fbcfe8; color:red; border-radius:4px;">🗑️ Delete</button>
             </td>
         `;
 
-        // Bind interactive inline event loop listeners directly
-        row.querySelector('.btn-edit-action').addEventListener('click', () => onEdit(book));
-        row.querySelector('.btn-delete-action').addEventListener('click', () => onDelete(book.id));
+        gridRow.querySelector('.btn-row-edit').addEventListener('click', () => triggerEditCall(bookItem));
+        gridRow.querySelector('.btn-row-delete').addEventListener('click', () => triggerDeleteCall(bookItem.id));
 
-        tableBody.appendChild(row);
+        targetBody.appendChild(gridRow);
     });
-}
-
-export function displayFormErrors(errors) {
-    const errorBox = document.getElementById('form-errors');
-    if (!errorBox) return;
-    if (!errors || errors.length === 0) {
-        errorBox.style.display = 'none';
-        return;
-    }
-    errorBox.style.display = 'block';
-    errorBox.innerHTML = `<strong style="display:block; margin-bottom:5px;">⚠️ Form Processing Faults:</strong>
-        <ul style="margin:0; padding-left:20px;">${errors.map(err => `<li>${err}</li>`).join('')}</ul>`;
 }

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦋 LYNN Book & Notes Vault - Test Suite 🦋</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 40px;
+            background-color: #fff5f7; /* Matching pink theme */
+            color: #333;
+        }
+        h1 { color: #d61f69; }
+        .test-group { margin-bottom: 25px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .test-result { padding: 6px 12px; margin: 5px 0; border-radius: 4px; display: flex; justify-content: space-between; font-weight: 500; }
+        .pass { background-color: #def7ec; color: #03543f; }
+        .fail { background-color: #fde8e8; color: #9b1c1c; }
+        .summary { font-size: 1.2rem; font-weight: bold; margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <h1>🦋 Validation Rules - Automated Test Engine</h1>
+    <p>This test suite verifies the integrity of regex formatting constraints before deployment.</p>
+    <hr style="border: 1px solid #fbcfe8; margin-bottom: 20px;">
+
+    <div id="test-output"></div>
+    <div id="test-summary" class="summary"></div>
+
+    <script type="module">
+        import { REGEX_TITLE, REGEX_PAGES, REGEX_DATE, REGEX_TAGS, REGEX_REPEATING_WORDS } from './scripts/validators.js';
+
+        // 1. Definition of Test Arrays
+        const tests = [
+            // Title & Author constraints tests
+            { regex: REGEX_TITLE, input: "The Great Gatsby", expect: true, name: "Valid Title (No extra spaces)" },
+            { regex: REGEX_TITLE, input: "  Invalid Title", expect: false, name: "Bar leading spaces" },
+            { regex: REGEX_TITLE, input: "Invalid Title  ", expect: false, name: "Bar trailing spaces" },
+
+            // Page validation tests
+            { regex: REGEX_PAGES, input: "345", expect: true, name: "Valid page count (Positive integer)" },
+            { regex: REGEX_PAGES, input: "0", expect: false, name: "Bar zero page entries" },
+            { regex: REGEX_PAGES, input: "-12", expect: false, name: "Bar negative page numbers" },
+            { regex: REGEX_PAGES, input: "4.5", expect: false, name: "Bar decimal page values" },
+
+            // Date validation tests
+            { regex: REGEX_DATE, input: "2026-06-16", expect: true, name: "Valid date structure (YYYY-MM-DD)" },
+            { regex: REGEX_DATE, input: "16-06-2026", expect: false, name: "Bar inverted day-month arrangements" },
+            { regex: REGEX_DATE, input: "2026/06/16", expect: false, name: "Bar slash separation formatting" },
+
+            // Tag verification tests
+            { regex: REGEX_TAGS, input: "Fiction, Romance", expect: true, name: "Valid word list tags" },
+            { regex: REGEX_TAGS, input: "Fiction123", expect: false, name: "Bar numeric values in tags" },
+
+            // Advanced lookahead duplicate word tests
+            { regex: REGEX_REPEATING_WORDS, input: "Sally Sally Rooney", expect: true, name: "Detect duplicate author tokens" },
+            { regex: REGEX_REPEATING_WORDS, input: "Sally Rooney", expect: false, name: "Clean author text passes" }
+        ];
+
+        // 2. Execution Engine
+        const outputContainer = document.getElementById('test-output');
+        let passCount = 0;
+
+        tests.forEach(test => {
+            // Note: For advanced lookahead matching, test expectation is reversed compared to plain verification regexes
+            const actualResult = test.regex.test(test.input);
+            const isMatch = actualResult === test.expect;
+
+            if (isMatch) passCount++;
+
+            const div = document.createElement('div');
+            div.className = `test-result ${isMatch ? 'pass' : 'fail'}`;
+            div.innerHTML = `
+                <span><strong>${test.name}</strong> (Input: "${test.input}")</span>
+                <span>${isMatch ? '✔ PASS' : '✘ FAIL'}</span>
+            `;
+            outputContainer.appendChild(div);
+        });
+
+        // 3. Render Summary Metric
+        const summaryBox = document.getElementById('test-summary');
+        const allPassed = passCount === tests.length;
+        summaryBox.className += ` ${allPassed ? 'pass' : 'fail'}`;
+        summaryBox.textContent = `Result Summary: ${passCount} / ${tests.length} Verification Checks Passed! 🦋`;
+    </script>
+</body>
+</html>

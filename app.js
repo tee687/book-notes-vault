@@ -1,61 +1,63 @@
-import { switchView, renderDashboardMetrics, renderCatalogTable, displayFormErrors } from './scripts/ui.js';
+import { fetchStoredBooks, persistBooksCollection, validateBackupSchema } from './scripts/storage.js';
+import { runFormValidationPipeline } from './scripts/validators.js';
+import { executeRegexQueryFilter } from './scripts/search.js';
+import { transitionActiveView, populateDashboardMetrics, populateCatalogRecordsTable } from './scripts/ui.js';
 
-// State Architecture Management
-let currentLibrary = JSON.parse(localStorage.getItem('lynn_vault_books')) || [];
-let activeEditId = null;
+let appStateBooks = fetchStoredBooks();
+let activeEditingReferenceId = null;
 
-function saveStateToStorage() {
-    localStorage.setItem('lynn_vault_books', JSON.stringify(currentLibrary));
-    refreshUIComponents();
+function commitStateAndSyncUI() {
+    persistBooksCollection(appStateBooks);
+    executeUIRenderWorkflowLoop();
 }
 
-function refreshUIComponents() {
-    const query = document.getElementById('search-input')?.value || '';
-    const sorting = document.getElementById('sort-select')?.value || 'dateAdded-desc';
+function executeUIRenderWorkflowLoop() {
+    const rawPatternString = document.getElementById('search-input')?.value || '';
+    const sortingConditionMode = document.getElementById('sort-select')?.value || 'dateAdded-desc';
     
-    renderDashboardMetrics(currentLibrary);
-    renderCatalogTable(currentLibrary, query, sorting, handleInlineEditTrigger, handleRecordDeletion);
-}
-
-// ✍️ Handle Inline Edit Triggers
-function handleInlineEditTrigger(book) {
-    activeEditId = book.id;
-    switchView('form-view');
+    const searchFilteredCollection = executeRegexQueryFilter(appStateBooks, rawPatternString);
     
-    document.querySelector('#form-view h2').textContent = `✏️ Edit Vault Book (${book.id})`;
-    document.getElementById('form-title').value = book.title;
-    document.getElementById('form-author').value = book.author;
-    document.getElementById('form-pages').value = book.pages;
-    document.getElementById('form-cover').value = book.cover || '';
-    document.getElementById('form-tags').value = Array.isArray(book.tags) ? book.tags.join(', ') : book.tags;
+    populateDashboardMetrics(appStateBooks);
+    populateCatalogRecordsTable(searchFilteredCollection, rawPatternString, sortingConditionMode, handleInlineEditRequest, handleRecordDeletionExecution);
 }
 
-// 🗑️ Handle Record Deletion Flow with Confirm Modals
-function handleRecordDeletion(id) {
-    if (confirm(`Are you sure you want to permanently erase book record [${id}] from the Vault storage layers?`)) {
-        currentLibrary = currentLibrary.filter(b => b.id !== id);
-        saveStateToStorage();
+function handleInlineEditRequest(bookObj) {
+    activeEditingReferenceId = bookObj.id;
+    transitionActiveView('form-view');
+    
+    document.getElementById('form-section-heading').textContent = `✏️ Edit Book Entry (${bookObj.id})`;
+    document.getElementById('form-title').value = bookObj.title;
+    document.getElementById('form-author').value = bookObj.author;
+    document.getElementById('form-pages').value = bookObj.pages;
+    document.getElementById('form-cover').value = bookObj.cover || '';
+    document.getElementById('form-tags').value = Array.isArray(bookObj.tags) ? bookObj.tags.join(', ') : bookObj.tags;
+}
+
+function handleRecordDeletionExecution(id) {
+    if (confirm("Are you sure you want to permanently delete this book entry from your local vault storage?")) {
+        appStateBooks = appStateBooks.filter(item => item.id !== id);
+        commitStateAndSyncUI();
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Nav Bar Link Switch Route Hook Routing
+    // Navigation routing listeners
     document.querySelectorAll('.nav-link').forEach(btn => {
         btn.addEventListener('click', () => {
-            const path = btn.getAttribute('data-target');
-            switchView(path);
+            const viewTargetId = btn.getAttribute('data-target');
+            transitionActiveView(viewTargetId);
             
-            if (path === 'form-view' && !activeEditId) {
-                document.querySelector('#form-view h2').textContent = "Add a New Book to the Vault";
+            if (viewTargetId === 'form-view' && !activeEditingReferenceId) {
+                document.getElementById('form-section-heading').textContent = "Add a New Book to the Vault";
                 document.getElementById('add-book-form').reset();
             }
         });
     });
 
-    // 📝 Add/Edit Form Validation processing pipeline
-    const form = document.getElementById('add-book-form');
-    form?.addEventListener('submit', (e) => {
-        e.preventDefault();
+    // Form submit listener
+    const submissionForm = document.getElementById('add-book-form');
+    submissionForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
         
         const title = document.getElementById('form-title').value.trim();
         const author = document.getElementById('form-author').value.trim();
@@ -63,86 +65,80 @@ document.addEventListener('DOMContentLoaded', () => {
         const cover = document.getElementById('form-cover').value.trim();
         const tagsStr = document.getElementById('form-tags').value.trim();
 
-        const errors = [];
-        // Regex rules validation checks from Image C
-        if (!/^\S+(?:.*\S+)?$/.test(title)) errors.push("Title cannot contain leading/trailing white spaces.");
-        if (!/^\S+(?:.*\S+)?$/.test(author)) errors.push("Author cannot contain leading/trailing white spaces.");
-        if (!/^(0|[1-9]\d*)(\.\d{1,2})?$/.test(pagesStr)) errors.push("Page count must run as a clean positive numeric value.");
+        const errorsDetectedList = runFormValidationPipeline(title, author, pagesStr);
+        const feedbackErrorBox = document.getElementById('form-errors');
+        const feedbackSuccessBox = document.getElementById('form-success');
 
-        if (errors.length > 0) {
-            displayFormErrors(errors);
+        if (errorsDetectedList.length > 0) {
+            feedbackSuccessBox.style.display = 'none';
+            feedbackErrorBox.style.display = 'block';
+            feedbackErrorBox.innerHTML = `<strong>Form errors detected:</strong><ul>${errorsDetectedList.map(e => `<li>${e}</li>`).join('')}</ul>`;
             return;
         }
-        displayFormErrors([]);
 
-        const parsedPages = parseInt(pagesStr, 10);
-        const tagsArr = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [];
+        feedbackErrorBox.style.display = 'none';
+        const parsedPageInt = parseInt(pagesStr, 10);
+        const arrayTags = tagsStr ? tagsStr.split(',').map(item => item.trim()).filter(Boolean) : [];
 
-        if (activeEditId) {
-            // Update an existing record
-            currentLibrary = currentLibrary.map(b => b.id === activeEditId ? {
-                ...b, title, author, pages: parsedPages, cover, tags: tagsArr, updatedAt: new Date().toISOString()
-            } : b);
-            activeEditId = null;
+        if (activeEditingReferenceId) {
+            appStateBooks = appStateBooks.map(item => item.id === activeEditingReferenceId ? {
+                ...item, title, author, pages: parsedPageInt, cover, tags: arrayTags, updatedAt: new Date().toISOString()
+            } : item);
+            activeEditingReferenceId = null;
         } else {
-            // Append a completely brand new book record
-            const newBook = {
-                id: `rec_${Math.floor(1000 + Math.random() * 9000)}`,
-                title, author, pages: parsedPages, cover, tags: tagsArr,
+            const appendedNewRecordItem = {
+                id: `rec_${Date.now().toString().slice(-4)}`,
+                title, author, pages: parsedPageInt, cover, tags: arrayTags,
                 dateAdded: new Date().toISOString().split('T')[0],
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
-            currentLibrary.push(newBook);
+            appStateBooks.push(appendedNewRecordItem);
         }
 
-        form.reset();
-        saveStateToStorage();
+        submissionForm.reset();
+        commitStateAndSyncUI();
         
-        const feedback = document.getElementById('form-success');
-        if (feedback) {
-            feedback.textContent = "🚀 Vault entry state metrics cataloged successfully!";
-            feedback.style.display = 'block';
-        }
+        feedbackSuccessBox.textContent = "🚀 Vault catalog states updated successfully!";
+        feedbackSuccessBox.style.display = 'block';
     });
 
-    // Search input monitoring
-    document.getElementById('search-input')?.addEventListener('input', refreshUIComponents);
-    document.getElementById('sort-select')?.addEventListener('change', refreshUIComponents);
-    document.getElementById('settings-page-cap')?.addEventListener('input', refreshUIComponents);
+    // Filtering, sorting and configuration change listeners
+    document.getElementById('search-input')?.addEventListener('input', executeUIRenderWorkflowLoop);
+    document.getElementById('sort-select')?.addEventListener('change', executeUIRenderWorkflowLoop);
+    document.getElementById('settings-page-cap')?.addEventListener('input', executeUIRenderWorkflowLoop);
 
-    // 💾 Import / Export Engine Pipelines (Image B Requirement)
+    // Backup actions loop logic
     document.getElementById('btn-export')?.addEventListener('click', () => {
-        const fileBlob = new Blob([JSON.stringify(currentLibrary, null, 2)], { type: 'application/json' });
-        const downloadUrl = URL.createObjectURL(fileBlob);
-        const placeholderLink = document.createElement('a');
-        placeholderLink.href = downloadUrl;
-        placeholderLink.download = `lynn_vault_backup_${new Date().toISOString().split('T')[0]}.json`;
-        placeholderLink.click();
+        const systemBlobInstance = new Blob([JSON.stringify(appStateBooks, null, 2)], { type: 'application/json' });
+        const temporaryDownloadAnchor = document.createElement('a');
+        temporaryDownloadAnchor.href = URL.createObjectURL(systemBlobInstance);
+        temporaryDownloadAnchor.download = `lynn_vault_backup.json`;
+        temporaryDownloadAnchor.click();
     });
 
-    document.getElementById('btn-import')?.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    document.getElementById('btn-import')?.addEventListener('change', (evt) => {
+        const standardTargetFile = evt.target.files[0];
+        if (!standardTargetFile) return;
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
+        const uploadFileReader = new FileReader();
+        uploadFileReader.onload = (readEvent) => {
             try {
-                const parsedData = JSON.parse(event.target.result);
-                if (Array.isArray(parsedData)) {
-                    currentLibrary = parsedData;
-                    saveStateToStorage();
-                    alert("📂 Vault records imported successfully!");
+                const parsedObjectDump = JSON.parse(readEvent.target.result);
+                if (validateBackupSchema(parsedObjectDump)) {
+                    appStateBooks = parsedObjectDump;
+                    commitStateAndSyncUI();
+                    alert("📂 Vault backup data populated perfectly!");
                 } else {
-                    alert("ValidationError: Input file structure must form an array.");
+                    alert("ValidationError: Upload data schema layout mismatch properties.");
                 }
             } catch (err) {
-                alert("ParseError: Failed to safely compile raw JSON array string entries.");
+                alert("ParseError: Malformed file data structures could not compile.");
             }
         };
-        reader.readAsText(file);
+        uploadFileReader.readAsText(standardTargetFile);
     });
 
-    // Run primary load rendering matrix sequences
-    refreshUIComponents();
+    // Run first initialization render pass
+    executeUIRenderWorkflowLoop();
 });

@@ -12,181 +12,170 @@
 
     <header class="app-header">
         <h1>🦋 LYNN Book & Notes Vault 🦋</h1>
-        <nav>
-            <button class="nav-link" data-target="about-view">About</button>
-            <button class="nav-link" data-target="dashboard-view">Dashboard</button>
-            <button class="nav-link" data-target="catalog-view">My Catalog</button>
-            <button class="nav-link" data-target="form-view">Add Book</button>
-            <button class="nav-link" data-target="settings-view">Settings</button>
+        <nav role="navigation" aria-label="Main Navigation">
+            <button class="nav-link" data-target="about-view" aria-selected="true">About</button>
+            <button class="nav-link" data-target="dashboard-view" aria-selected="false">Dashboard</button>
+            <button class="nav-link" data-target="catalog-view" aria-selected="false">My Catalog</button>
+            <button class="nav-link" data-target="form-view" aria-selected="false">Add Book</button>
+            <button class="nav-link" data-target="settings-view" aria-selected="false">Settings</button>
         </nav>
     </header>
 
-    <div id="aria-announcer" role="status" aria-live="polite" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;"></div>
+    <div id="aria-announcer" role="status" aria-live="polite"></div>
 
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
         
         <section id="about-view" class="app-section">
-            <div style="display: flex; flex-direction: column; gap: 25px; max-width: 800px; margin-top: 10px;">
-                <div style="background: #fff5f7; padding: 30px; border-radius: 12px; border: 1px solid #fbcfe8; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
-                    <h2 style="color: #9d174d; margin-top: 0; margin-bottom: 12px; font-size: 1.6rem; display: flex; align-items: center; gap: 8px;">
-                        🦋 About the Vault Creator
-                    </h2>
-                    <p style="font-size: 1.05rem; line-height: 1.6; color: #4c0519; margin-bottom: 20px;">
-                        Welcome to the <strong>Lynn Book & Notes Vault</strong> application. This system is designed as a pristine, single-page dashboard to catalog your literary collection, monitor reading metrics dynamically, and organize learning notes.
-                    </p>
-                    <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #fce7f3;">
-                        <h3 style="color: #db2777; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0; margin-bottom: 15px;">
-                            Developer Profile
-                        </h3>
-                        <div style="display: flex; flex-direction: column; gap: 10px; color: #4b5563; font-size: 0.95rem;">
-                            <div><strong style="color: #9d174d;">Name:</strong> Tendai Lynn Mtakiwa</div>
-                            <div>
-                                <strong style="color: #9d174d;">Email:</strong> 
-                                <a href="mailto:t.mtakiwa@alustudent.com" style="color: #db2777; text-decoration: none; font-weight: 500;">t.mtakiwa@alustudent.com</a>
-                            </div>
-                            <div>
-                                <strong style="color: #9d174d;">GitHub Profile:</strong> 
-                                <a href="https://github.com/tee687" target="_blank" rel="noopener noreferrer" style="color: #db2777; text-decoration: none; font-weight: 600;">🐈‍⬛ tee687</a>
-                            </div>
-                        </div>
-                    </div>
+            <div class="card about-card">
+                <h2>🦋 About the Vault Creator</h2>
+                <p>Welcome to the <strong>Lynn Book & Notes Vault</strong> application. This system is designed as a pristine, single-page dashboard to catalog your literary collection, monitor reading metrics dynamically, and organize learning notes.</p>
+                
+                <div class="profile-box">
+                    <h3>Developer Profile</h3>
+                    <p><strong>Name:</strong> Tendai Lynn Mtakiwa</p>
+                    <p><strong>Email:</strong> <a href="mailto:t.mtakiwa@alustudent.com">t.mtakiwa@alustudent.com</a></p>
+                    <p><strong>GitHub Profile:</strong> <a href="https://github.com/tee687" target="_blank" rel="noopener noreferrer">🐈‍⬛ tee687</a></p>
                 </div>
             </div>
         </section>
 
-        <section id="form-view" class="app-section hidden">
-            <h2>Add a New Book to the Vault</h2>
-            <div id="form-errors" style="display: none; background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; padding: 12px; margin-bottom: 20px; border-radius: 4px;"></div>
-            <div id="form-success" style="display: none; background: #d1fae5; border-left: 4px solid #10b981; color: #065f46; padding: 12px; margin-bottom: 20px; border-radius: 4px; font-weight: 500;"></div>
-
-            <form id="add-book-form" style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 500px; display: flex; flex-direction: column; gap: 15px;">
-                <div>
-                    <label style="display: block; font-weight: 500; margin-bottom: 5px; color: #374151;">Book Title *</label>
-                    <input type="text" id="form-title" style="width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px;" placeholder="e.g. The Fellowship of the Ring">
-                </div>
-                <div>
-                    <label style="display: block; font-weight: 500; margin-bottom: 5px; color: #374151;">Author Name *</label>
-                    <input type="text" id="form-author" style="width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px;" placeholder="e.g. J.R.R. Tolkien">
-                </div>
-                <div>
-                    <label style="display: block; font-weight: 500; margin-bottom: 5px; color: #374151;">Page Count *</label>
-                    <input type="number" id="form-pages" style="width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px;" placeholder="e.g. 423">
-                </div>
-                <div>
-                    <label style="display: block; font-weight: 500; margin-bottom: 5px; color: #374151;">Book Cover Image URL</label>
-                    <input type="url" id="form-cover" style="width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px;" placeholder="https://example.com/cover-image.jpg">
-                </div>
-                <div>
-                    <label style="display: block; font-weight: 500; margin-bottom: 5px; color: #374151;">Tags (Comma Separated)</label>
-                    <input type="text" id="form-tags" style="width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px;" placeholder="e.g. Fantasy, Classic, Adventure">
-                </div>
-                <button type="submit" style="background: #d61f69; color: white; padding: 10px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Save Book to Vault</button>
-            </form>
-        </section>
-
         <section id="dashboard-view" class="app-section hidden">
-            <div style="max-width: 800px; margin-top: 10px; display: flex; flex-direction: column; gap: 25px;">
-                <div style="background: #fff5f7; padding: 25px; border-radius: 12px; border: 1px solid #fbcfe8;">
-                    <h2 style="color: #9d174d; margin: 0 0 8px 0; font-size: 1.6rem;">📊 Library Analytics Dashboard</h2>
-                    <p style="color: #4c0519; margin: 0; font-size: 1.05rem;">Real-time metrics, progress tracking thresholds, and recent reading volume scales.</p>
+            <div class="dashboard-header">
+                <h2>📊 Library Analytics Dashboard</h2>
+                <p>Real-time metrics, progress tracking thresholds, and recent reading volume scales.</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card pink-top">
+                    <h3>Total Books</h3>
+                    <p id="stat-total-books">0</p>
                 </div>
-                
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div style="background: white; padding: 20px; border-radius: 12px; flex: 1; min-width: 200px; border: 1px solid #fce7f3; border-top: 4px solid #f472b6;">
-                        <h3 style="margin: 0; color: #6b7280; font-size: 0.85rem; text-transform: uppercase;">Total Books</h3>
-                        <p id="stat-total-books" style="margin: 15px 0 0 0; font-size: 2.5rem; font-weight: 800; color: #9d174d;">0</p>
-                    </div>
-                    <div style="background: white; padding: 20px; border-radius: 12px; flex: 1; min-width: 200px; border: 1px solid #fce7f3; border-top: 4px solid #ec4899;">
-                        <h3 style="margin: 0; color: #6b7280; font-size: 0.85rem; text-transform: uppercase;">Total Page Count</h3>
-                        <p id="stat-total-pages" style="margin: 15px 0 0 0; font-size: 2.5rem; font-weight: 800; color: #9d174d;">0</p>
-                    </div>
-                    <div style="background: white; padding: 20px; border-radius: 12px; flex: 1; min-width: 200px; border: 1px solid #fce7f3; border-top: 4px solid #db2777;">
-                        <h3 style="margin: 0; color: #6b7280; font-size: 0.85rem; text-transform: uppercase;">Top Book Tag</h3>
-                        <p id="stat-top-tag" style="margin: 15px 0 0 0; font-size: 1.8rem; font-weight: 700; color: #9d174d;">None</p>
-                    </div>
+                <div class="stat-card hotpink-top">
+                    <h3>Total Page Count</h3>
+                    <p id="stat-total-pages">0</p>
                 </div>
+                <div class="stat-card deep-top">
+                    <h3>Top Book Tag</h3>
+                    <p id="stat-top-tag">None</p>
+                </div>
+            </div>
 
-                <div id="target-cap-box" style="background: #fff5f7; border: 1px solid #fbcfe8; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 5px;">
-                    <h3 style="margin: 0; color: #9d174d; font-size: 1.1rem;">🎯 Library Target Milestone Status</h3>
-                    <p id="target-cap-status" style="margin: 5px 0 0 0; font-size: 1.05rem; font-weight: 600; color: #4c0519;">Loading threshold capacity configuration metrics...</p>
-                </div>
+            <div id="target-cap-box" class="card dynamic-alert-box">
+                <h3>🎯 Library Target Milestone Status</h3>
+                <p id="target-cap-status">Loading threshold configuration metrics...</p>
+            </div>
 
-                <div style="background: white; padding: 30px; border-radius: 12px; border: 1px solid #e5e7eb;">
-                    <h3 style="margin: 0 0 20px 0; color: #9d174d; font-size: 1.2rem;">📈 Reading Trend (Last 7 Days)</h3>
-                    <div id="chart-container" style="display: flex; align-items: flex-end; justify-content: space-around; background: #fff5f7; height: 240px; padding: 25px 20px 15px 20px; border-radius: 8px; border: 1px solid #fbcfe8;"></div>
-                </div>
+            <div class="card chart-card">
+                <h3>📈 Reading Trend (Last 7 Days)</h3>
+                <div id="chart-container" class="chart-wrapper"></div>
             </div>
         </section>
 
         <section id="catalog-view" class="app-section hidden">
-            <div style="max-width: 1000px; margin-top: 10px; display: flex; flex-direction: column; gap: 20px;">
-                <div>
-                    <h2 style="color: #9d174d; margin: 0 0 5px 0;">📚 Book Archive Collection</h2>
-                    <p style="color: #4b5563; margin: 0;">Perform regular expression-backed queries, sort by column headings, and manage records instantly.</p>
+            <div class="section-title">
+                <h2>📚 Book Archive Collection</h2>
+                <p>Perform regular expression queries, sort columns, and manage records instantly.</p>
+            </div>
+            
+            <div class="toolbar-box">
+                <div class="search-field-wrapper">
+                    <label for="search-input" class="visually-hidden">Search entries with RegEx patterns</label>
+                    <input type="text" id="search-input" placeholder="🔍 Regular expression search (e.g., ^The|Classic$)...">
                 </div>
-                
-                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; background: #fff5f7; padding: 15px; border-radius: 8px; border: 1px solid #fbcfe8;">
-                    <div style="flex: 1; min-width: 280px;">
-                        <input type="text" id="search-input" placeholder="🔍 Regular expression search (e.g. ^The|Classic$)..." style="width: 100%; padding: 10px 12px; border: 1px solid #fbcfe8; border-radius: 6px; font-size: 0.95rem;">
-                    </div>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <label style="font-weight: 600; color: #4c0519; font-size: 0.9rem;">Sort By:</label>
-                        <select id="sort-select" style="padding: 10px; border: 1px solid #fbcfe8; background: white; border-radius: 6px; color: #9d174d; font-weight: 500;">
-                            <option value="dateAdded-desc">Date Added (Newest)</option>
-                            <option value="dateAdded-asc">Date Added (Oldest)</option>
-                            <option value="title-asc">Title (A-Z)</option>
-                            <option value="title-desc">Title (Z-A)</option>
-                            <option value="pages-desc">Pages (High-Low)</option>
-                            <option value="pages-asc">Pages (Low-High)</option>
-                        </select>
-                    </div>
+                <div class="sort-field-wrapper">
+                    <label id="sort-label" for="sort-select">Sort By:</label>
+                    <select id="sort-select" aria-labelledby="sort-label">
+                        <option value="dateAdded-desc">Date Added (Newest)</option>
+                        <option value="dateAdded-asc">Date Added (Oldest)</option>
+                        <option value="title-asc">Title (A-Z)</option>
+                        <option value="title-desc">Title (Z-A)</option>
+                        <option value="pages-desc">Pages (High-Low)</option>
+                        <option value="pages-asc">Pages (Low-High)</option>
+                    </select>
                 </div>
+            </div>
 
-                <div style="overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
-                        <thead>
-                            <tr style="background: #fff5f7; border-bottom: 2px solid #fbcfe8;">
-                                <th style="padding: 14px 16px; color: #9d174d; font-weight: 700;">ID</th>
-                                <th style="padding: 14px 16px; color: #9d174d; font-weight: 700;">Cover</th>
-                                <th style="padding: 14px 16px; color: #9d174d; font-weight: 700;">Title</th>
-                                <th style="padding: 14px 16px; color: #9d174d; font-weight: 700;">Author</th>
-                                <th style="padding: 14px 16px; color: #9d174d; font-weight: 700;">Pages</th>
-                                <th style="padding: 14px 16px; color: #9d174d; font-weight: 700;">Tags</th>
-                                <th style="padding: 14px 16px; color: #9d174d; font-weight: 700;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="catalog-table-body"></tbody>
-                    </table>
-                </div>
+            <div class="table-scroll-container">
+                <table class="catalog-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cover</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Pages</th>
+                            <th>Tags</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="catalog-table-body"></tbody>
+                </table>
             </div>
         </section>
 
-        <section id="settings-view" class="app-section hidden">
-            <div style="max-width: 600px; margin-top: 10px; display: flex; flex-direction: column; gap: 20px;">
-                <h2>Vault Configuration Settings</h2>
-                <div style="background: white; padding: 25px; border-radius: 12px; border: 1px solid #e5e7eb;">
-                    <h3 style="color: #9d174d; margin-top: 0;">🎯 Reading Milestone Target Cap</h3>
-                    <p style="color: #6b7280; font-size: 0.9rem;">Specify your maximum milestone capacity for page calculations to configure overage alert system announcements.</p>
-                    <div style="margin-top: 15px;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Max Capacity Target (Pages)</label>
-                        <input type="number" id="settings-page-cap" value="2000" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
-                    </div>
+        <section id="form-view" class="app-section hidden">
+            <h2 id="form-section-heading">Add a New Book to the Vault</h2>
+            <div id="form-errors" class="alert-error-box" style="display: none;"></div>
+            <div id="form-success" class="alert-success-box" style="display: none;"></div>
+
+            <form id="add-book-form" class="vault-form">
+                <div class="form-group">
+                    <label for="form-title">Book Title *</label>
+                    <input type="text" id="form-title" required placeholder="e.g., The Fellowship of the Ring">
+                    <span class="field-hint">No leading/trailing spaces allowed.</span>
                 </div>
-                
-                <div style="background: white; padding: 25px; border-radius: 12px; border: 1px solid #e5e7eb;">
-                    <h3 style="color: #9d174d; margin-top: 0;">💾 Portable Backup Actions</h3>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button id="btn-export" style="background: #4b5563; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Export JSON Backup</button>
-                        <label style="background: #db2777; color: white; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                            Import JSON Backup
-                            <input type="file" id="btn-import" accept=".json" style="display: none;">
-                        </label>
-                    </div>
+                <div class="form-group">
+                    <label for="form-author">Author Name *</label>
+                    <input type="text" id="form-author" required placeholder="e.g., J.R.R. Tolkien">
+                    <span class="field-hint">Advanced rule: Repeated author surnames are flagged (e.g., Smith Smith).</span>
+                </div>
+                <div class="form-group">
+                    <label for="form-pages">Page Count *</label>
+                    <input type="number" id="form-pages" required placeholder="e.g., 423">
+                    <span class="field-hint">Must be a whole positive number.</span>
+                </div>
+                <div class="form-group">
+                    <label for="form-cover">Book Cover Image URL</label>
+                    <input type="url" id="form-cover" placeholder="https://example.com/cover.jpg">
+                </div>
+                <div class="form-group">
+                    <label for="form-tags">Tags (Comma Separated)</label>
+                    <input type="text" id="form-tags" placeholder="e.g., Fantasy, Classic, Adventure">
+                </div>
+                <button type="submit" class="btn-primary">Save Book to Vault</button>
+            </form>
+        </section>
+
+        <section id="settings-view" class="app-section hidden">
+            <h2>Vault Configuration Settings</h2>
+            
+            <div class="card settings-card">
+                <h3>🎯 Reading Milestone Target Cap</h3>
+                <p>Specify your maximum milestone capacity for page calculations to configure overage alert system announcements.</p>
+                <div class="form-group style-top">
+                    <label for="settings-page-cap">Max Capacity Target (Pages)</label>
+                    <input type="number" id="settings-page-cap" value="2000">
+                </div>
+            </div>
+            
+            <div class="card settings-card">
+                <h3>💾 Portable Backup Actions</h3>
+                <p>Export your book data to an external backup file, or upload an existing backup.</p>
+                <div class="btn-row">
+                    <button id="btn-export" class="btn-secondary">Export JSON Backup</button>
+                    <label class="btn-primary file-label">
+                        Import JSON Backup
+                        <input type="file" id="btn-import" accept=".json">
+                    </label>
                 </div>
             </div>
         </section>
 
     </main>
+
+    <footer class="app-footer">
+        <p>&copy; 2026 LYNN Book & Notes Vault. Designed for perfect desktop, tablet, and mobile accessibility.</p>
+    </footer>
 
     <script type="module" src="app.js"></script>
 </body>
