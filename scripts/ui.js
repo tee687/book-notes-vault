@@ -12,7 +12,7 @@ export function populateDashboardMetrics(booksCollection) {
     const totalBooks = booksCollection.length;
     const computedTotalPages = booksCollection.reduce((sum, current) => sum + parseInt(current.pages || 0, 10), 0);
 
-    // Compute top frequent tags
+    //  top frequent tags
     const distributionMap = {};
     booksCollection.forEach(entry => {
         const parsingSource = Array.isArray(entry.tags) ? entry.tags : (entry.tags ? entry.tags.split(',') : []);
@@ -42,7 +42,7 @@ export function populateDashboardMetrics(booksCollection) {
         }
     }
 
-    // Build Last-7-days reading trends graph chart array outputs
+    // Last-7-days reading trends graph chart array outputs
     const windowPlotterBox = document.getElementById('chart-container');
     if (!windowPlotterBox) return;
     windowPlotterBox.innerHTML = '';
@@ -107,7 +107,7 @@ export function populateCatalogRecordsTable(filteredBooks, activePattern, sortKe
         let matchingTitleContent = bookItem.title || 'Untitled';
         let matchingAuthorContent = bookItem.author || 'Unknown';
 
-        // Apply HTML highlighting tags if a search query is active
+        //  HTML highlighting tags if a search query is active
         if (activePattern.trim()) {
             try {
                 const isolationCompiler = new RegExp(`(${activePattern})`, 'gi');

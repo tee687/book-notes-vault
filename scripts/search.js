@@ -8,7 +8,7 @@ export function executeRegexQueryFilter(books, criteriaPattern) {
             dynamicCompiledRegex.test(book.author || '')
         );
     } catch (invalidRegexFaultException) {
-        // Safe evaluation shield while typing raw unmatched patterns
+        
         return books; 
     }
 }

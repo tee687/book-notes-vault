@@ -14,7 +14,7 @@ export function persistBooksCollection(booksArray) {
     localStorage.setItem(KEY, JSON.stringify(booksArray));
 }
 
-// Ensure full structural compatibility check before processing loading
+
 export function validateBackupSchema(data) {
     if (!Array.isArray(data)) return false;
     return data.every(item => item && typeof item === 'object' && 'title' in item && 'author' in item && 'pages' in item);
