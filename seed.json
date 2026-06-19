@@ -1,29 +1,82 @@
 [
   {
-    "id": "rec_0001",
+    "id": 1,
     "title": "The Hobbit",
     "author": "J.R.R. Tolkien",
-    "pages": "310",
-    "cover": "https://images.unsplash.com/photo-1618666012174-83b441c0bc76?w=100&auto=format&fit=crop&q=60",
-    "tags": ["Fantasy"],
-    "dateAdded": "2026-01-15"
+    "pages": 310,
+    "tags": ["Fantasy", "Classic"],
+    "dateAdded": "2026-01-01"
   },
   {
-    "id": "rec_0002",
-    "title": "Atomic Habits",
-    "author": "James Clear",
-    "pages": "320",
-    "cover": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=100&auto=format&fit=crop&q=60",
-    "tags": ["Self-Help"],
-    "dateAdded": "2026-02-10"
+    "id": 2,
+    "title": "A-Z Critical Guide",
+    "author": "O'Connor Mac-Donald",
+    "pages": 1250,
+    "tags": ["Reference", "Tricky Strings"],
+    "dateAdded": "2026-06-19"
   },
   {
-    "id": "rec_0003",
-    "title": "Educated",
-    "author": "Tara Westover",
-    "pages": "352",
-    "cover": "https://images.unsplash.com/photo-1531988042231-d39a9cc12a9a?w=100&auto=format&fit=crop&q=60",
-    "tags": ["Biography"],
-    "dateAdded": "2026-03-05"
+    "id": 3,
+    "title": "The Last Sentinel",
+    "author": "X",
+    "pages": 5,
+    "tags": ["Short-Story", "Minimalist"],
+    "dateAdded": "1999-12-31"
+  },
+  {
+    "id": 4,
+    "title": "Data Science & AI Vol. IV",
+    "author": "Dr. Li-Wei Zhang",
+    "pages": 2450,
+    "tags": ["Technical", "Data"],
+    "dateAdded": "2026-02-15"
+  },
+  {
+    "id": 5,
+    "title": "Echoes, (Part 1; Vol. 2!)",
+    "author": "J. D. Salinger",
+    "pages": 198,
+    "tags": ["Fiction", "Anthology"],
+    "dateAdded": "2025-12-25"
+  },
+  {
+    "id": 6,
+    "title": "The Quantum Leap",
+    "author": "Niels Bohr-Einstein",
+    "pages": 42,
+    "tags": ["Physics", "Science"],
+    "dateAdded": "2026-05-10"
+  },
+  {
+    "id": 7,
+    "title": "100 Years of Solitude",
+    "author": "Gabriel García Márquez",
+    "pages": 417,
+    "tags": ["Classic", "Historical"],
+    "dateAdded": "2024-07-04"
+  },
+  {
+    "id": 8,
+    "title": "The Ultimate Comprehensive Atlas Guide",
+    "author": "Anonymous",
+    "pages": 5500,
+    "tags": ["Reference", "Huge Numbers"],
+    "dateAdded": "2026-06-01"
+  },
+  {
+    "id": 9,
+    "title": "Mindset: 10-Step Framework",
+    "author": "Carol S. Dweck",
+    "pages": 288,
+    "tags": ["Self-Help", "Psychology"],
+    "dateAdded": "2020-02-29"
+  },
+  {
+    "id": 10,
+    "title": "Zeno's Paradoxical Journeys",
+    "author": "Zeno of Elea",
+    "pages": 12,
+    "tags": ["Philosophy", "Ancient"],
+    "dateAdded": "2026-03-14"
   }
 ]
