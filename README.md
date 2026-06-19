@@ -93,7 +93,7 @@ Because the application uses modern modular browser features, running it locally
 
 ## Citations and References
 
-* AI Assistance: Project structure, data validation logic, keyboard navigation flows, and UI rendering workflow loops designed and refactored with assistance from Gemini and Claude AI.
+* AI Assistance: Formatting, text clean-up, and table structuring for README.md documentation alongside initial structural validation array mock layouts for seed.json completed with assistance from Gemini and Claude AI.
 * Accessibility Guidelines: Adapted principles from the WCAG 2.1 Checklist for keyboard focus and semantic landmark structures.
 * Keyboard Navigation: Implemented standard skip-link patterns based on the WebAIM Accessibility Checklist.
 
