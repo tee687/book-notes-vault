@@ -4,7 +4,7 @@ A clean, responsive, single-page dashboard application built to catalog literary
 
 * **Live Website URL (GitHub Pages Only):** [https://tee687.github.io/book-notes-vault/](https://tee687.github.io/book-notes-vault/)
 * **Repository URL:** [https://github.com/tee687/book-notes-vault](https://github.com/tee687/book-notes-vault)
-* **Demo Video (Unlisted Link):** [https://youtu.be/I_hXrQBWlqA](https://youtu.be/I_hXrQBWlqA)
+* **Demo Video (Unlisted Link):** [https://youtu.be/otYXyfCthCg](https://youtu.be/otYXyfCthCg)
 
 ---
 
